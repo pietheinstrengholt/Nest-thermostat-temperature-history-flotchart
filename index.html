@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Nest Thermostat history</title>
+	<link href="css/style.css" rel="stylesheet" type="text/css">
+	<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../../excanvas.min.js"></script><![endif]-->
+	<script language="javascript" type="text/javascript" src="javascript/jquery.js"></script>
+	<script language="javascript" type="text/javascript" src="javascript/jquery.flot.js"></script>
+	<script language="javascript" type="text/javascript" src="javascript/jquery.flot.time.js"></script>
+	<script language="javascript" type="text/javascript" src="javascript/jquery.flot.selection.js"></script>
+	<script type="text/javascript">
+
+	$.getJSON("json.php?temperature=yes", function(data){
+
+		// create empty array
+		var d = [];
+	
+		// start counting 
+		var j = 0; 
+		
+		// loop through JSON array, push results to empty array
+		$.each(data, function (timestamp, temperature) {
+			var newval = [timestamp, temperature];
+			d[j] = newval;
+			j++;
+		});
+		
+		$(function() {
+
+			// helper for returning the weekends in a period
+			
+			function weekendAreas(axes) {
+
+				var markings = [],
+					d = new Date(axes.xaxis.min);
+
+				// go to the first Saturday
+
+				d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 1) % 7))
+				d.setUTCSeconds(0);
+				d.setUTCMinutes(0);
+				d.setUTCHours(0);
+
+				var i = d.getTime();
+
+				// when we don't set yaxis, the rectangle automatically
+				// extends to infinity upwards and downwards
+
+				do {
+					markings.push({ xaxis: { from: i, to: i + 2 * 24 * 60 * 60 * 1000 } });
+					i += 7 * 24 * 60 * 60 * 1000;
+				} while (i < axes.xaxis.max);
+
+				return markings;
+			}
+
+			var options = {
+				xaxis: {
+					mode: "time",
+					tickLength: 5
+				},
+				selection: {
+					mode: "x"
+				},
+				grid: {
+					markings: weekendAreas
+				}
+			};
+
+			var plot = $.plot("#placeholder", [d], options);
+
+			var overview = $.plot("#overview", [d], {
+				series: {
+					lines: {
+						show: true,
+						lineWidth: 1
+					},
+					shadowSize: 0
+				},
+				xaxis: {
+					ticks: [],
+					mode: "time"
+				},
+				yaxis: {
+					ticks: [],
+					min: 0,
+					autoscaleMargin: 0.1
+				},
+				selection: {
+					mode: "x"
+				}
+			});
+
+			// now connect the two
+
+			$("#placeholder").bind("plotselected", function (event, ranges) {
+
+				// do the zooming
+				$.each(plot.getXAxes(), function(_, axis) {
+					var opts = axis.options;
+					opts.min = ranges.xaxis.from;
+					opts.max = ranges.xaxis.to;
+				});
+				plot.setupGrid();
+				plot.draw();
+				plot.clearSelection();
+
+				// don't fire event on the overview to prevent eternal loop
+
+				overview.setSelection(ranges, true);
+			});
+
+			$("#overview").bind("plotselected", function (event, ranges) {
+				plot.setSelection(ranges);
+			});
+
+		});		
+		
+		
+	});
+	
+	</script>
+</head>
+<body>
+
+	<div id="header">
+		<h2>Nest thermostat temperature history</h2>
+	</div>
+
+	<div id="content">
+
+		<div class="demo-container">
+			<div id="placeholder" class="demo-placeholder"></div>
+		</div>
+
+		<div class="demo-container" style="height:150px;">
+			<div id="overview" class="demo-placeholder"></div>
+		</div>
+
+		<p>This plot shows the nest thermostat temperature history.</p>
+
+	</div>
+
+	<div id="footer">
+		Copyright &copy; 2014 Piethein Strengholt
+	</div>
+
+</body>
+</html>
