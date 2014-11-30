@@ -31,5 +31,6 @@ The following scripts are used within Nest thermostat temperature tool:
 TODO
 ----
 
+* Add Curved lines: https://github.com/MichaelZinsmaier/CurvedLines
 * Cleanup code.
-* Change graph color when heating, cooling, auto-away or leaf mode is.
+* Change graph color when heating, cooling, auto-away or leaf mode is on.
