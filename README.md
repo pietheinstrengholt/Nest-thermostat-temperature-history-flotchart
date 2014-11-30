@@ -5,6 +5,8 @@
 Nest thermostat temperature
 =======
 
+The Nest thermostat temperature history is a tool written in PHP and Javascript. It uses the FlotCharts code to draw graphs from the data obtained from the "Nest servers". In order to read the information from nest the nest-api is used.
+
 Copyright (c) 2014 Piethein Strengholt, piethein@strengholt-online.nl
 
 INSTALLATION
@@ -23,6 +25,7 @@ The following scripts are used within Nest thermostat temperature tool:
 
 * FlotCharts: http://www.flotcharts.org/
 * jQuery: http://jquery.com/
+* nest-api: https://github.com/gboudreau/nest-api
 
 
 TODO
