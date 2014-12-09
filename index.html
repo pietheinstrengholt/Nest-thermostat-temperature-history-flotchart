@@ -11,32 +11,42 @@
 	<script language="javascript" type="text/javascript" src="javascript/jquery.flot.selection.js"></script>
 	<script type="text/javascript">
 
-	$.getJSON("json.php?temperature=yes", function(data){
+	$.getJSON("json.php", function(data){
 
-		// create empty array
-		var d = [];
+		// create empty arrays for different data color sets
+		var data1 = [];
+		var data2 = [];
+		var data3 = [];
+		var data4 = [];
 	
 		// start counting 
-		var j = 0; 
+		var j = 0;
 		
 		// loop through JSON array, push results to empty array
-		$.each(data, function (timestamp, temperature) {
-			var newval = [timestamp, temperature];
-			d[j] = newval;
+		$.each(data, function (timestamp, input) {
+			var newval = [timestamp, input['value']];
+			if (input['color'] == "red") {
+				data1[j] = newval;
+			} else if (input['color'] == "green") {
+				data2[j] = newval;
+			} else if (input['color'] == "blue") {
+				data3[j] = newval;
+			} else {
+				data4[j] = newval;
+			}
+
 			j++;
 		});
 		
 		$(function() {
 
-			// helper for returning the weekends in a period
-			
+			// helper for returning the weekends in a period		
 			function weekendAreas(axes) {
 
 				var markings = [],
 					d = new Date(axes.xaxis.min);
 
 				// go to the first Saturday
-
 				d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 1) % 7))
 				d.setUTCSeconds(0);
 				d.setUTCMinutes(0);
@@ -46,7 +56,6 @@
 
 				// when we don't set yaxis, the rectangle automatically
 				// extends to infinity upwards and downwards
-
 				do {
 					markings.push({ xaxis: { from: i, to: i + 2 * 24 * 60 * 60 * 1000 } });
 					i += 7 * 24 * 60 * 60 * 1000;
@@ -56,25 +65,42 @@
 			}
 
 			var options = {
+				series: {
+					bars: {
+						show: true,
+						barWidth: 300000,
+						align: "center",
+						fill: true,
+						lineWidth: 0,
+						fillColor: { colors: [{ opacity: 1.0 }, { opacity: 0.7}] }
+					},
+					shadowSize: 0
+				},
 				xaxis: {
 					mode: "time",
 					tickLength: 5
+				},
+				yaxis: {
+					min: 14
 				},
 				selection: {
 					mode: "x"
 				},
 				grid: {
 					markings: weekendAreas
-				}
+				},
+				colors: ["#CB4B4B", "#4DA74D", "#AFD8F8", "#EDC240"]
 			};
 
-			var plot = $.plot("#placeholder", [d], options);
-
-			var overview = $.plot("#overview", [d], {
+			var plot = $.plot("#placeholder", [{ data: data1 }, { data: data2 }, { data: data3 }, { data: data4 }], options);
+			
+			var overview = $.plot("#overview", [{ data: data1 }, { data: data2 }, { data: data3 }, { data: data4 }], {
 				series: {
 					lines: {
 						show: true,
-						lineWidth: 1
+						lineWidth: 1,
+						fill: true,
+						fillColor: { colors: [ { opacity: 0.8 }, { opacity: 0.1 } ] }
 					},
 					shadowSize: 0
 				},
@@ -84,16 +110,16 @@
 				},
 				yaxis: {
 					ticks: [],
-					min: 0,
-					autoscaleMargin: 0.1
+					min: 10,
+					autoscaleMargin: 0.4
 				},
 				selection: {
 					mode: "x"
-				}
+				},
+				colors: ["#CB4B4B", "#4DA74D", "#AFD8F8", "#EDC240"]
 			});
 
 			// now connect the two
-
 			$("#placeholder").bind("plotselected", function (event, ranges) {
 
 				// do the zooming
@@ -107,7 +133,6 @@
 				plot.clearSelection();
 
 				// don't fire event on the overview to prevent eternal loop
-
 				overview.setSelection(ranges, true);
 			});
 

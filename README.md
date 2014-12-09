@@ -1,5 +1,5 @@
 <a href="http://www.strengholt-online.nl">
-  <img src="http://www.strengholt-online.nl/wp-content/uploads/2014/11/nest-temp2.png" width="800px">
+  <img src="http://www.strengholt-online.nl/wp-content/uploads/2014/12/nest-flotchart.jpg" width="700px">
 </a>
 
 Nest thermostat temperature
@@ -33,4 +33,3 @@ TODO
 
 * Add Curved lines: https://github.com/MichaelZinsmaier/CurvedLines
 * Cleanup code.
-* Change graph color when heating, cooling, auto-away or leaf mode is on.
