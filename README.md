@@ -5,17 +5,18 @@
 Nest thermostat temperature
 =======
 
-The Nest thermostat temperature history is a tool written in PHP and Javascript. It uses the FlotCharts code to draw graphs from the data obtained from the "Nest servers". In order to read the information from nest the nest-api is used.
+The "Nest thermostat history tool" is a near real-time temperature / monitoring tool to visualise all thermostat statistics. The tool can visualise temperature over a large amount of time. Different colors are used for heating (red), auto_away (blue), leaf (green) and other (yellow). It fetches the data from the nest servers and stores it in a local database. The tool is written in PHP and Javascript.
 
 Copyright (c) 2014 Piethein Strengholt, piethein@strengholt-online.nl
 
 INSTALLATION
 ------------
 
-1. Create table with database.sql
-2. Change username, password in load.php and json.php
-3. Add nest account and password to load.php
-4. Start polling with load.php
+1. Create a new table with the database.sql script
+2. Change servername, username and password in load.php and json.php files
+3. Add your nest account-name and password to the load.php file
+4. Start polling with load.php (cronjob every 5 minutes)
+To poll every minute change the 'barWidth: 300000' to 'barWidth: 60000' in the index.html
 
 
 CREDITS
